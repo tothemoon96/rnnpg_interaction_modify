@@ -29,7 +29,8 @@ SOURCES += \
     src/tone_helper/ToneRhythm.cpp \
     src/util/XConfig.cpp \
     src/util/xutil.cpp \
-    src/main2.cpp
+    src/main2.cpp \
+    src/main1.cpp
 
 DISTFILES += \
 	.gitignore

@@ -26,10 +26,10 @@
 #include <time.h>
 #include <fstream>
 #include <iostream>
-#include "rnnlmlib.h"
+#include "language_model/rnnlmlib.h"
 using namespace std;
 
-#include "FirstSentenceGenerator.h"
+#include "generator/FirstSentenceGenerator.h"
 
 void cmdLine(int argc, char **argv)
 {
