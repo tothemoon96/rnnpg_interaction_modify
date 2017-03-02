@@ -31,21 +31,21 @@ class StackItem
 public:
 	StackItem(int hsize) : cost(0), hiddenSize(hsize), posInSent(0), tonalPattern(0), validPos(0), curTPIdx(-1)
 	{
-		hiddenNeu = new neuron[hiddenSize];
+		hiddenNeu = new RNNPGNS::neuron[hiddenSize];
 		for(int i = 0; i < FEATURE_SIZE; i ++)
 			featVals[i] = 0;
 	}
 	void ecopy(StackItem &sitem)
 	{
 		cost = sitem.cost;
-		neuron* tmp = hiddenNeu;
+		RNNPGNS::neuron* tmp = hiddenNeu;
 		hiddenNeu = sitem.hiddenNeu;
 		sitem.hiddenNeu = tmp;
 		hiddenSize = sitem.hiddenSize;
 		posInSent = sitem.posInSent;
 		curTrans = sitem.curTrans;
 	}
-	void renewHiddenNeu(neuron *newHiddenNeu)
+	void renewHiddenNeu(RNNPGNS::neuron *newHiddenNeu)
 	{
 		for(int i = 0; i < hiddenSize; i ++)
 			hiddenNeu[i].ac = newHiddenNeu[i].ac;
@@ -118,7 +118,7 @@ public:
 	}
 // private:
 	double cost;
-	neuron *hiddenNeu;
+	RNNPGNS::neuron *hiddenNeu;
 	int hiddenSize;
 	int posInSent;
 	string curTrans;
@@ -271,7 +271,7 @@ public:
 		disableRNN = 0;
 		int i;
 		for(i = 0; i < MAX_SEN_LEN; i ++)
-			contextHiddenNeu[i] = new neuron[hiddenSize];
+			contextHiddenNeu[i] = new RNNPGNS::neuron[hiddenSize];
 
 		for(i = 0; i < FEATURE_SIZE; i ++)
 			featWeights[i] = 1;
@@ -328,7 +328,7 @@ private:
 	//|...								  |
 	//|6								  |
 	//|7								  |
-	neuron *contextHiddenNeu[MAX_SEN_LEN];
+	RNNPGNS::neuron *contextHiddenNeu[MAX_SEN_LEN];
 
 	enum FSIZE{FEATURE_SIZE = 7};
 	double featWeights[FEATURE_SIZE];

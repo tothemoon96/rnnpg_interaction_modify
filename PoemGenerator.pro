@@ -15,7 +15,8 @@ HEADERS += \
     src/tone_helper/TonalPattern.h \
     src/tone_helper/ToneRhythm.h \
     src/util/XConfig.h \
-    src/util/xutil.h
+    src/util/xutil.h \
+    src/generator/PoemGenerator.h
 
 SOURCES += \
     src/generator/Decoder.cpp \
@@ -29,11 +30,12 @@ SOURCES += \
     src/tone_helper/ToneRhythm.cpp \
     src/util/XConfig.cpp \
     src/util/xutil.cpp \
-    src/main2.cpp \
-    src/main1.cpp
+    src/generator/PoemGenerator.cpp \
+    src/main.cpp
 
 DISTFILES += \
-	.gitignore
+	.gitignore \
+    model/PoemGenerator.conf
 
 INCLUDEPATH +=\
 	kenlm

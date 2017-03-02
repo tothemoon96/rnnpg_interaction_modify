@@ -31,7 +31,7 @@ int Decoder::decode(vector<string> &prevSents, int stackSize, int K, vector<stri
 	// cout << "get context neuron done" << endl;
 
 	int i, j, k;
-	neuron *newHiddenNeu = new neuron[hiddenSize];
+	RNNPGNS::neuron *newHiddenNeu = new RNNPGNS::neuron[hiddenSize];
 	Stack **stacks = new Stack*[senLen + 1];
 	for(i = 0; i <= senLen; i ++)
 		stacks[i] = new Stack(stackSize, hiddenSize);
@@ -312,7 +312,7 @@ int Decoder::decodeTransTable(vector<string> &prevSents, int stackSize, int K, v
 	rnnpg->getContextHiddenNeu(prevSents, contextHiddenNeu);
 
 	int i, j, k, t;
-	neuron *newHiddenNeu = new neuron[hiddenSize];
+	RNNPGNS::neuron *newHiddenNeu = new RNNPGNS::neuron[hiddenSize];
 	Stack **stacks = new Stack*[senLen + 1];
 	for(i = 0; i < senLen; i ++)
 		stacks[i] = new Stack(stackSize, hiddenSize);
@@ -583,7 +583,7 @@ int Decoder::decodeWithConstraits(vector<string> &prevSents, int stackSize, int 
 	rnnpg->getContextHiddenNeu(prevSents, contextHiddenNeu);
 
 	int i, j, k, t;
-	neuron *newHiddenNeu = new neuron[hiddenSize];
+	RNNPGNS::neuron *newHiddenNeu = new RNNPGNS::neuron[hiddenSize];
 	Stack **stacks = new Stack*[senLen + 1];
 	for(i = 0; i < senLen; i ++)
 		stacks[i] = new Stack(stackSize, hiddenSize);

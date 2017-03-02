@@ -26,13 +26,14 @@ typedef double real;
 
 struct neuron {
 	// f(net) or net
-    real ac;		//actual value stored in neuron
-    real er;		//error value in neuron, used by learning algorithm
+	real ac;		//actual value stored in neuron
+	real er;		//error value in neuron, used by learning algorithm
 };
-                
+
 struct synapse {
-    real weight;	//weight of synapse
+	real weight;	//weight of synapse
 };
+
 
 struct vocab_word {
     int cn;

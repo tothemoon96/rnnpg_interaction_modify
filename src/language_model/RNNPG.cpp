@@ -8,11 +8,10 @@
 #include <iostream>
 #include <cstdio>
 #include <cassert>
-using namespace std;
 
 #include "RNNPG.h"
 #include "../util/xutil.h"
-
+using namespace std;
 //#ifndef M_LN10
 //#define M_LN10 2.30258509299404568402  /* log_e 10 */
 //#endif
@@ -249,8 +248,8 @@ void RNNPG::initNet()
 	// allocate memory and initilize conSyn (the convolution matrix)
 	for(i = 0; i < MAX_CON_N; i ++)
 	{
-		conSyn[i] = (synapse*)xmalloc(hiddenSize * conSeq[i] * sizeof(synapse), "in initNet (con syn)");
-		conSynOffset[i] = (synapse*)xmalloc(hiddenSize * conSeq[i] * sizeof(synapse), "in initNet (con syn offset)");
+		conSyn[i] = (RNNPGNS::synapse*)xmalloc(hiddenSize * conSeq[i] * sizeof(RNNPGNS::synapse), "in initNet (con syn)");
+		conSynOffset[i] = (RNNPGNS::synapse*)xmalloc(hiddenSize * conSeq[i] * sizeof(RNNPGNS::synapse), "in initNet (con syn offset)");
 		N = hiddenSize * conSeq[i];
 		for(j = 0; j < N; j ++)
 		{
@@ -284,7 +283,7 @@ void RNNPG::initNet()
 	int unitNum = 5;
 	for(i = 0; i < SEN5_HIGHT; i ++)
 	{
-		sen5Neu[i] = (neuron*)xmalloc(hiddenSize * unitNum * sizeof(neuron), "in initNet (sen5neu)");
+		sen5Neu[i] = (RNNPGNS::neuron*)xmalloc(hiddenSize * unitNum * sizeof(RNNPGNS::neuron), "in initNet (sen5neu)");
 		N = hiddenSize * unitNum;
 		for(j = 0; j < N; j ++)
 			sen5Neu[i][j].set();
@@ -293,56 +292,56 @@ void RNNPG::initNet()
 	unitNum = 7;
 	for(i = 0; i < SEN7_HIGHT; i ++)
 	{
-		sen7Neu[i] = (neuron*)xmalloc(hiddenSize * unitNum * sizeof(neuron), "in initNet (sen7neu)");
+		sen7Neu[i] = (RNNPGNS::neuron*)xmalloc(hiddenSize * unitNum * sizeof(RNNPGNS::neuron), "in initNet (sen7neu)");
 		N = hiddenSize * unitNum;
 		for(j = 0; j < N; j ++)
 			sen7Neu[i][j].set();
 		if(unitNum > 1)	unitNum -= conSeq[i] - 1;
 	}
 	// allocate memory and initilization for compression matrix
-	compressSyn = (synapse*)xmalloc(2 * hiddenSize * hiddenSize * sizeof(synapse), "in initNet (compress syn)");
+	compressSyn = (RNNPGNS::synapse*)xmalloc(2 * hiddenSize * hiddenSize * sizeof(RNNPGNS::synapse), "in initNet (compress syn)");
 	N = 2 * hiddenSize * hiddenSize;
 	for(i = 0; i < N; i ++)
 		compressSyn[i].weight = random(-0.1, 0.1)+random(-0.1, 0.1)+random(-0.1, 0.1);
-	hisNeu = (neuron*)xmalloc(hiddenSize * sizeof(neuron));
-	cmbNeu = (neuron*)xmalloc(hiddenSize * 2 * sizeof(neuron));
+	hisNeu = (RNNPGNS::neuron*)xmalloc(hiddenSize * sizeof(RNNPGNS::neuron));
+	cmbNeu = (RNNPGNS::neuron*)xmalloc(hiddenSize * 2 * sizeof(RNNPGNS::neuron));
 	// =========== end of data structures for the sentence model ==============
 
 	// allocate memory and initilization for map matrix
 	for(i = 0; i < 8; i ++)
 	{
-		map7Syn[i] = (synapse*)xmalloc(hiddenSize * hiddenSize * sizeof(synapse), "in initNet (map7 syn)");
+		map7Syn[i] = (RNNPGNS::synapse*)xmalloc(hiddenSize * hiddenSize * sizeof(RNNPGNS::synapse), "in initNet (map7 syn)");
 		N = hiddenSize * hiddenSize;
 		for(j = 0; j < N; j ++)
 			map7Syn[i][j].weight = random(-0.1, 0.1)+random(-0.1, 0.1)+random(-0.1, 0.1);
 	}
 	for(i = 0; i < 6; i ++)
 	{
-		map5Syn[i] = (synapse*)xmalloc(hiddenSize * hiddenSize * sizeof(synapse), "in initNet (map5 syn)");
+		map5Syn[i] = (RNNPGNS::synapse*)xmalloc(hiddenSize * hiddenSize * sizeof(RNNPGNS::synapse), "in initNet (map5 syn)");
 		N = hiddenSize * hiddenSize;
 		for(j = 0; j < N; j ++)
 			map5Syn[i][j].weight = random(-0.1, 0.1)+random(-0.1, 0.1)+random(-0.1, 0.1);
 	}
-	conditionNeu = (neuron*)xmalloc(hiddenSize * sizeof(neuron), "in initNet (condition neu)");
+	conditionNeu = (RNNPGNS::neuron*)xmalloc(hiddenSize * sizeof(RNNPGNS::neuron), "in initNet (condition neu)");
 
 	// allocate memory and initilization for recurrent neural network: input layer, hidden layer and output layer
-	inNeu = (neuron*)xmalloc((vocab.getVocabSize() + hiddenSize + hiddenSize) * sizeof(neuron), "in initNet (in neu)");
+	inNeu = (RNNPGNS::neuron*)xmalloc((vocab.getVocabSize() + hiddenSize + hiddenSize) * sizeof(RNNPGNS::neuron), "in initNet (in neu)");
 	N = vocab.getVocabSize() + hiddenSize + hiddenSize;
 	for(i = 0; i < N; i ++)
 		inNeu[i].set();
-	hiddenNeu = (neuron*)xmalloc(hiddenSize * sizeof(neuron), "in initNet (hidden neu)");
+	hiddenNeu = (RNNPGNS::neuron*)xmalloc(hiddenSize * sizeof(RNNPGNS::neuron), "in initNet (hidden neu)");
 	for(i = 0; i < hiddenSize; i ++)
 		hiddenNeu[i].set();
-	outNeu = (neuron*)xmalloc((vocab.getVocabSize() + classSize)*sizeof(neuron), "in initNet (out neu)");
+	outNeu = (RNNPGNS::neuron*)xmalloc((vocab.getVocabSize() + classSize)*sizeof(RNNPGNS::neuron), "in initNet (out neu)");
 	N = vocab.getVocabSize() + classSize;
 	for(i = 0; i < N; i ++)
 		outNeu[i].set();
 
-	hiddenInSyn = (synapse*)xmalloc(hiddenSize * (vocab.getVocabSize() + hiddenSize + hiddenSize) * sizeof(synapse), "in initNet (hidden syn)");
+	hiddenInSyn = (RNNPGNS::synapse*)xmalloc(hiddenSize * (vocab.getVocabSize() + hiddenSize + hiddenSize) * sizeof(RNNPGNS::synapse), "in initNet (hidden syn)");
 	N = hiddenSize * (vocab.getVocabSize() + hiddenSize + hiddenSize);
 	for(i = 0; i < N; i ++)
 		hiddenInSyn[i].weight = random(-0.1, 0.1)+random(-0.1, 0.1)+random(-0.1, 0.1);
-	outHiddenSyn = (synapse*)xmalloc((vocab.getVocabSize() + classSize) * hiddenSize * sizeof(synapse), "in initNet (hidden syn)");
+	outHiddenSyn = (RNNPGNS::synapse*)xmalloc((vocab.getVocabSize() + classSize) * hiddenSize * sizeof(RNNPGNS::synapse), "in initNet (hidden syn)");
 	N = (vocab.getVocabSize() + classSize) * hiddenSize;
 	for(i = 0; i < N; i ++)
 		outHiddenSyn[i].weight = random(-0.1, 0.1)+random(-0.1, 0.1)+random(-0.1, 0.1);
@@ -358,15 +357,15 @@ void RNNPG::initNet()
 		assignClassLabel();
 
  	bpttHistory = (int*)xmalloc((SEN7_LENGTH + 1) * sizeof(int), "in initNet (bptt history)");
- 	bpttHiddenNeu = (neuron*)xmalloc((SEN7_LENGTH + 1) * hiddenSize * sizeof(neuron), "in initNet (bptt hidden neuron)");
- 	bpttInHiddenNeu = (neuron*)xmalloc((SEN7_LENGTH + 1) * hiddenSize * sizeof(neuron), "in initNet (bptt input hidden neuron)");
- 	bpttHiddenInSyn = (synapse*)xmalloc(hiddenSize * (vocab.getVocabSize() + hiddenSize + hiddenSize) * sizeof(synapse), "in initNet (bptt hidden in sysnapse)");
+	bpttHiddenNeu = (RNNPGNS::neuron*)xmalloc((SEN7_LENGTH + 1) * hiddenSize * sizeof(RNNPGNS::neuron), "in initNet (bptt hidden neuron)");
+	bpttInHiddenNeu = (RNNPGNS::neuron*)xmalloc((SEN7_LENGTH + 1) * hiddenSize * sizeof(RNNPGNS::neuron), "in initNet (bptt input hidden neuron)");
+	bpttHiddenInSyn = (RNNPGNS::synapse*)xmalloc(hiddenSize * (vocab.getVocabSize() + hiddenSize + hiddenSize) * sizeof(RNNPGNS::synapse), "in initNet (bptt hidden in sysnapse)");
  	N = hiddenSize * (vocab.getVocabSize() + hiddenSize + hiddenSize);
  	for(i = 0; i < N; i ++)
  		bpttHiddenInSyn[i].weight = 0;
- 	bpttConditionNeu = (neuron*)xmalloc((SEN7_LENGTH + 1) * hiddenSize * sizeof(neuron), "in initNet (bptt condition neuron)");
+	bpttConditionNeu = (RNNPGNS::neuron*)xmalloc((SEN7_LENGTH + 1) * hiddenSize * sizeof(RNNPGNS::neuron), "in initNet (bptt condition neuron)");
 
- 	senweSyn = (synapse*)xmalloc(vocab.getVocabSize() * hiddenSize * sizeof(synapse), "in initNet (sentence model word embedding sysnapse)");
+	senweSyn = (RNNPGNS::synapse*)xmalloc(vocab.getVocabSize() * hiddenSize * sizeof(RNNPGNS::synapse), "in initNet (sentence model word embedding sysnapse)");
  	if(mode == TRAIN_MODE)
  	{
 		if(randomlyInitSenModelEmbedding)
@@ -397,17 +396,17 @@ void RNNPG::initNet()
  	initBackup();
 
  	// for directErr propagate to input layer
-	outConditionDSyn = (synapse*)xmalloc((vocab.getVocabSize() + classSize) * hiddenSize * sizeof(synapse), "in initNet (outConditionDSyn)");
+	outConditionDSyn = (RNNPGNS::synapse*)xmalloc((vocab.getVocabSize() + classSize) * hiddenSize * sizeof(RNNPGNS::synapse), "in initNet (outConditionDSyn)");
 	N = (vocab.getVocabSize() + classSize) * hiddenSize;
 	for(i = 0; i < N; i ++) outConditionDSyn[i].weight = random(-0.1, 0.1)+random(-0.1, 0.1)+random(-0.1, 0.1);
-	bufOutConditionNeu = (neuron*)xmalloc(hiddenSize * (SEN7_LENGTH + 1) * sizeof(neuron), "in initNet (bufOutConditionNeu)");
+	bufOutConditionNeu = (RNNPGNS::neuron*)xmalloc(hiddenSize * (SEN7_LENGTH + 1) * sizeof(RNNPGNS::neuron), "in initNet (bufOutConditionNeu)");
 
 	// for recurrent context model bptt training
 	const int MAX_SEN_POEM = 15;	// this number should be enough: lvshi is 8, quatrain is 4
-	conBPTTHis = (neuron*)xmalloc(MAX_SEN_POEM * hiddenSize * sizeof(neuron), "in initNet (con BPTT History)");
-	conBPTTCmbHis = (neuron*)xmalloc(MAX_SEN_POEM * hiddenSize * sizeof(neuron), "in initNet (con BPTT combine history)");
-	conBPTTCmbSent = (neuron*)xmalloc(MAX_SEN_POEM * hiddenSize * sizeof(neuron), "in initNet (con BPTT combine sentence)");
-	bpttHisCmbSyn = (synapse*)xmalloc(hiddenSize * 2 * hiddenSize * sizeof(synapse), "in initNet (bptt History Combine synapse)");
+	conBPTTHis = (RNNPGNS::neuron*)xmalloc(MAX_SEN_POEM * hiddenSize * sizeof(RNNPGNS::neuron), "in initNet (con BPTT History)");
+	conBPTTCmbHis = (RNNPGNS::neuron*)xmalloc(MAX_SEN_POEM * hiddenSize * sizeof(RNNPGNS::neuron), "in initNet (con BPTT combine history)");
+	conBPTTCmbSent = (RNNPGNS::neuron*)xmalloc(MAX_SEN_POEM * hiddenSize * sizeof(RNNPGNS::neuron), "in initNet (con BPTT combine sentence)");
+	bpttHisCmbSyn = (RNNPGNS::synapse*)xmalloc(hiddenSize * 2 * hiddenSize * sizeof(RNNPGNS::synapse), "in initNet (bptt History Combine synapse)");
 	N = hiddenSize * 2 * hiddenSize;
 	for(i = 0; i < N; i ++)
 		bpttHisCmbSyn[i].weight = 0;
@@ -481,7 +480,7 @@ void RNNPG::loadVocab(const char *trainFile)
 	cout << "load vocabulary done!" << endl;
 }
 
-neuron* RNNPG::sen2vec(const vector<string> &words, neuron **senNeu, int SEN_HIGHT)
+RNNPGNS::neuron* RNNPG::sen2vec(const vector<string> &words, RNNPGNS::neuron **senNeu, int SEN_HIGHT)
 {
 //	double *embedding = new double[hiddenSize];
 	int unitNum = words.size(), i, j;
@@ -551,7 +550,7 @@ void RNNPG::initSent(int senLen)
 {
 	int unitNum = senLen, i, j, N;
 	int SEN_HIGHT = senLen == 5 ? SEN5_HIGHT : SEN7_HIGHT;
-	neuron** senNeu = senLen == 5 ? sen5Neu : sen7Neu;
+	RNNPGNS::neuron** senNeu = senLen == 5 ? sen5Neu : sen7Neu;
 	for(i = 0; i < SEN_HIGHT; i ++)
 	{
 		N = hiddenSize * unitNum;
@@ -624,14 +623,14 @@ void RNNPG::assignClassLabel()
 	// vocab.print();
 }
 
-void RNNPG::computeNet(int lastWord, int curWord, int wordPos, synapse **mapSyn)
+void RNNPG::computeNet(int lastWord, int curWord, int wordPos, RNNPGNS::synapse **mapSyn)
 {
 	clearNeurons(conditionNeu, hiddenSize, 1);
 	matrixXvector(conditionNeu, hisNeu, mapSyn[wordPos], hiddenSize, 0, hiddenSize, 0, hiddenSize, 0);
 	funACNeurons(conditionNeu, hiddenSize);
 	int V = vocab.getVocabSize();
 	int outLayerSize = V + classSize;
-	memcpy(inNeu + V, conditionNeu, hiddenSize * sizeof(neuron));
+	memcpy(inNeu + V, conditionNeu, hiddenSize * sizeof(RNNPGNS::neuron));
 	// go back later...
 
 	// input layer to hidden layer
@@ -809,7 +808,7 @@ void RNNPG::learnSent(int senLen)
 //	}
 
 	// error propagate in sentence model
-	neuron **senNeu = senLen == 5 ? sen5Neu : sen7Neu;
+	RNNPGNS::neuron **senNeu = senLen == 5 ? sen5Neu : sen7Neu;
 	int SEN_HIGHT = senLen == 5 ? SEN5_HIGHT : SEN7_HIGHT;
 	int unitNum = 1, unitNumNx = 1, a = -1, b = -1;
 	for(i = 0; i < hiddenSize; i ++)
@@ -947,7 +946,7 @@ void RNNPG::learnSentBPTT(int senLen)
 	//	}
 
 		// error propagate in sentence model
-		neuron **senNeu = senLen == 5 ? sen5Neu : sen7Neu;
+		RNNPGNS::neuron **senNeu = senLen == 5 ? sen5Neu : sen7Neu;
 		int SEN_HIGHT = senLen == 5 ? SEN5_HIGHT : SEN7_HIGHT;
 		int unitNum = 1, unitNumNx = 1, a = -1, b = -1;
 		for(i = 0; i < hiddenSize; i ++)
@@ -1266,14 +1265,14 @@ void RNNPG::learnNet(int lastWord, int curWord, int wordPos, int senLen)
 
 	// this is for back propagation through time
 	bpttHistory[wordPos] = lastWord;	// store the last word
-	memcpy(bpttHiddenNeu + (wordPos * hiddenSize), hiddenNeu, sizeof(neuron)*hiddenSize);	// store the hidden layer
-	memcpy(bpttInHiddenNeu + (wordPos * hiddenSize), inNeu + (V + hiddenSize), sizeof(neuron)*hiddenSize);	// store the hidden units in input layer (previous hidden layer)
-	memcpy(bpttConditionNeu + (wordPos * hiddenSize), inNeu + V, sizeof(neuron)*hiddenSize);	// store the condition units in input layer
+	memcpy(bpttHiddenNeu + (wordPos * hiddenSize), hiddenNeu, sizeof(RNNPGNS::neuron)*hiddenSize);	// store the hidden layer
+	memcpy(bpttInHiddenNeu + (wordPos * hiddenSize), inNeu + (V + hiddenSize), sizeof(RNNPGNS::neuron)*hiddenSize);	// store the hidden units in input layer (previous hidden layer)
+	memcpy(bpttConditionNeu + (wordPos * hiddenSize), inNeu + V, sizeof(RNNPGNS::neuron)*hiddenSize);	// store the condition units in input layer
 	if(curWord != 0)
 		return;
 	// if this is the end of sentence, then let's do it
 	int lword = -1, layer1Size = V + hiddenSize + hiddenSize;
-	synapse **mapSyn = NULL;
+	RNNPGNS::synapse **mapSyn = NULL;
 	mapSyn = senLen == 5 ? map5Syn : map7Syn;
 	for(int step = wordPos; step >= 0; step --)
 	{
@@ -1349,7 +1348,7 @@ void RNNPG::learnNet(int lastWord, int curWord, int wordPos, int senLen)
 	}
 
 	// restore hidden layer
-	memcpy(hiddenNeu, bpttHiddenNeu + (wordPos * hiddenSize), sizeof(neuron)*hiddenSize);
+	memcpy(hiddenNeu, bpttHiddenNeu + (wordPos * hiddenSize), sizeof(RNNPGNS::neuron)*hiddenSize);
 
 
 	// update input matrix, X, condition Matrix, H and recurrent matrix, R
@@ -1450,7 +1449,7 @@ void RNNPG::learnSentAdaGrad(int senLen)
 //	}
 
 	// error propagate in sentence model
-	neuron **senNeu = senLen == 5 ? sen5Neu : sen7Neu;
+	RNNPGNS::neuron **senNeu = senLen == 5 ? sen5Neu : sen7Neu;
 	int SEN_HIGHT = senLen == 5 ? SEN5_HIGHT : SEN7_HIGHT;
 	int unitNum = 1, unitNumNx = 1, a = -1, b = -1;
 	for(i = 0; i < hiddenSize; i ++)
@@ -1673,14 +1672,14 @@ void RNNPG::learnNetAdaGrad(int lastWord, int curWord, int wordPos, int senLen)
 
 	// this is for back propagation through time
 	bpttHistory[wordPos] = lastWord;	// store the last word
-	memcpy(bpttHiddenNeu + (wordPos * hiddenSize), hiddenNeu, sizeof(neuron)*hiddenSize);	// store the hidden layer
-	memcpy(bpttInHiddenNeu + (wordPos * hiddenSize), inNeu + (V + hiddenSize), sizeof(neuron)*hiddenSize);	// store the hidden units in input layer (previous hidden layer)
-	memcpy(bpttConditionNeu + (wordPos * hiddenSize), inNeu + V, sizeof(neuron)*hiddenSize);	// store the condition units in input layer
+	memcpy(bpttHiddenNeu + (wordPos * hiddenSize), hiddenNeu, sizeof(RNNPGNS::neuron)*hiddenSize);	// store the hidden layer
+	memcpy(bpttInHiddenNeu + (wordPos * hiddenSize), inNeu + (V + hiddenSize), sizeof(RNNPGNS::neuron)*hiddenSize);	// store the hidden units in input layer (previous hidden layer)
+	memcpy(bpttConditionNeu + (wordPos * hiddenSize), inNeu + V, sizeof(RNNPGNS::neuron)*hiddenSize);	// store the condition units in input layer
 	if(curWord != 0)
 		return;
 	// if this is the end of sentence, then let's do it
 	int lword = -1, layer1Size = V + hiddenSize + hiddenSize;
-	synapse **mapSyn = NULL;
+	RNNPGNS::synapse **mapSyn = NULL;
 	mapSyn = senLen == 5 ? map5Syn : map7Syn;
 	double **mapSyn_ = senLen == 5 ? sumGradSquare.map5Syn_ : sumGradSquare.map7Syn_;
 	for(int step = wordPos; step >= 0; step --)
@@ -1768,7 +1767,7 @@ void RNNPG::learnNetAdaGrad(int lastWord, int curWord, int wordPos, int senLen)
 	}
 
 	// restore hidden layer
-	memcpy(hiddenNeu, bpttHiddenNeu + (wordPos * hiddenSize), sizeof(neuron)*hiddenSize);
+	memcpy(hiddenNeu, bpttHiddenNeu + (wordPos * hiddenSize), sizeof(RNNPGNS::neuron)*hiddenSize);
 
 
 	// update input matrix, X, condition Matrix, H and recurrent matrix, R
@@ -1862,7 +1861,7 @@ void RNNPG::trainPoem(const vector<string> &sentences)
 	int SEN_NUM = sentences.size();
 	vector<string> words;
 	int i, SEN_HIGHT = -1;
-	neuron **senNeu = NULL;
+	RNNPGNS::neuron **senNeu = NULL;
 	words.clear();
 	split(sentences[0].c_str(), " ", words);
 	SEN_HIGHT = words.size() == 5 ? SEN5_HIGHT : SEN7_HIGHT;
@@ -1870,7 +1869,7 @@ void RNNPG::trainPoem(const vector<string> &sentences)
 
 	// this is for the first sentence
 	initSent(words.size());
-	neuron *sen_repr = sen2vec(words, senNeu, SEN_HIGHT);		// this is the pointer for the top layer sentence model, DO NOT modify it
+	RNNPGNS::neuron *sen_repr = sen2vec(words, senNeu, SEN_HIGHT);		// this is the pointer for the top layer sentence model, DO NOT modify it
 
 	// for first sentence, we can just give the representation to the generation model, or
 	clearNeurons(cmbNeu, hiddenSize * 2, 3);		// this is probably a bug!!! change 1 to 3, also flush the error
@@ -1878,7 +1877,7 @@ void RNNPG::trainPoem(const vector<string> &sentences)
 	// init activation in recurrent context model
 	for(i = 0; i < hiddenSize; i ++)
 		cmbNeu[i].ac = historyStableAC;
-	memcpy(cmbNeu + hiddenSize, sen_repr, sizeof(neuron)*hiddenSize);
+	memcpy(cmbNeu + hiddenSize, sen_repr, sizeof(RNNPGNS::neuron)*hiddenSize);
 	clearNeurons(hisNeu, hiddenSize, 3);
 	matrixXvector(hisNeu, cmbNeu, compressSyn, hiddenSize * 2, 0, hiddenSize, 0, hiddenSize * 2, 0);
 	funACNeurons(hisNeu, hiddenSize);
@@ -1886,7 +1885,7 @@ void RNNPG::trainPoem(const vector<string> &sentences)
 	// alternivate
 	// memcpy(hisNeu, sen_repr, sizeof(neuron)*hiddenSize);
 
-	synapse **mapSyn = words.size() == 5 ? map5Syn : map7Syn;
+	RNNPGNS::synapse **mapSyn = words.size() == 5 ? map5Syn : map7Syn;
 	// this is for the subsequence sentences (generation and compress the representation)
 	for(i = 1; i < SEN_NUM; i ++)
 	{
@@ -1943,8 +1942,8 @@ void RNNPG::trainPoem(const vector<string> &sentences)
 			break;
 		initSent(words.size());
 		sen_repr = sen2vec(words, senNeu, SEN_HIGHT);
-		memcpy(cmbNeu, hisNeu, sizeof(neuron)*hiddenSize);
-		memcpy(cmbNeu + hiddenSize, sen_repr, sizeof(neuron)*hiddenSize);
+		memcpy(cmbNeu, hisNeu, sizeof(RNNPGNS::neuron)*hiddenSize);
+		memcpy(cmbNeu + hiddenSize, sen_repr, sizeof(RNNPGNS::neuron)*hiddenSize);
 		clearNeurons(hisNeu, hiddenSize, 3);
 		matrixXvector(hisNeu, cmbNeu, compressSyn, hiddenSize * 2, 0, hiddenSize, 0, hiddenSize * 2, 0);
 		funACNeurons(hisNeu, hiddenSize);
@@ -1956,7 +1955,7 @@ void RNNPG::testPoem(const vector<string> &sentences)
 	const int SEN_NUM = 4;
 	vector<string> words;
 	int i, SEN_HIGHT = -1;
-	neuron **senNeu = NULL;
+	RNNPGNS::neuron **senNeu = NULL;
 	words.clear();
 	split(sentences[0].c_str(), " ", words);
 	SEN_HIGHT = words.size() == 5 ? SEN5_HIGHT : SEN7_HIGHT;
@@ -1964,11 +1963,11 @@ void RNNPG::testPoem(const vector<string> &sentences)
 
 	// this is for the first sentence
 	initSent(words.size());
-	neuron *sen_repr = sen2vec(words, senNeu, SEN_HIGHT);		// this is the pointer for the top layer sentence model, DO NOT modify it
+	RNNPGNS::neuron *sen_repr = sen2vec(words, senNeu, SEN_HIGHT);		// this is the pointer for the top layer sentence model, DO NOT modify it
 
 	// for first sentence, we can just give the representation to the generation model, or
 	clearNeurons(cmbNeu, hiddenSize * 2, 3);		// this is probably a bug!!! change 1 to 3, also flush the error
-	memcpy(cmbNeu + hiddenSize, sen_repr, sizeof(neuron)*hiddenSize);
+	memcpy(cmbNeu + hiddenSize, sen_repr, sizeof(RNNPGNS::neuron)*hiddenSize);
 	clearNeurons(hisNeu, hiddenSize, 3);
 	matrixXvector(hisNeu, cmbNeu, compressSyn, hiddenSize * 2, 0, hiddenSize, 0, hiddenSize * 2, 0);
 	funACNeurons(hisNeu, hiddenSize);
@@ -1976,7 +1975,7 @@ void RNNPG::testPoem(const vector<string> &sentences)
 	// alternivate
 	// memcpy(hisNeu, sen_repr, sizeof(neuron)*hiddenSize);
 
-	synapse **mapSyn = words.size() == 5 ? map5Syn : map7Syn;
+	RNNPGNS::synapse **mapSyn = words.size() == 5 ? map5Syn : map7Syn;
 	// this is for the subsequence sentences (generation and compress the representation)
 	for(i = 1; i < SEN_NUM; i ++)
 	{
@@ -2036,8 +2035,8 @@ void RNNPG::testPoem(const vector<string> &sentences)
 			break;
 		initSent(words.size());
 		sen_repr = sen2vec(words, senNeu, SEN_HIGHT);
-		memcpy(cmbNeu, hisNeu, sizeof(neuron)*hiddenSize);
-		memcpy(cmbNeu + hiddenSize, sen_repr, sizeof(neuron)*hiddenSize);
+		memcpy(cmbNeu, hisNeu, sizeof(RNNPGNS::neuron)*hiddenSize);
+		memcpy(cmbNeu + hiddenSize, sen_repr, sizeof(RNNPGNS::neuron)*hiddenSize);
 		clearNeurons(hisNeu, hiddenSize, 3);
 		matrixXvector(hisNeu, cmbNeu, compressSyn, hiddenSize * 2, 0, hiddenSize, 0, hiddenSize * 2, 0);
 		funACNeurons(hisNeu, hiddenSize);
@@ -2051,19 +2050,19 @@ void RNNPG::initBackup()
 	for(i = 0; i < M; i ++)
 	{
 		N = hiddenSize * conSeq[i];
-		conSyn_backup[i] = (synapse*)xmalloc(N*sizeof(synapse));
+		conSyn_backup[i] = (RNNPGNS::synapse*)xmalloc(N*sizeof(RNNPGNS::synapse));
 	}
 	for(i = 0; i < M; i ++)
 	{
 		N = hiddenSize * conSeq[i];
-		conSynOffset_backup[i] = (synapse*)xmalloc(N*sizeof(synapse));
+		conSynOffset_backup[i] = (RNNPGNS::synapse*)xmalloc(N*sizeof(RNNPGNS::synapse));
 	}
 	M = SEN7_HIGHT;
 	unitNum = 7;
 	for(i = 0; i < M; i ++)
 	{
 		N = hiddenSize * unitNum;
-		sen7Neu_backup[i] = (neuron*)xmalloc(N * sizeof(neuron));
+		sen7Neu_backup[i] = (RNNPGNS::neuron*)xmalloc(N * sizeof(RNNPGNS::neuron));
 		if(unitNum > 1)	unitNum -= conSeq[i] - 1;
 	}
 	M = SEN5_HIGHT;
@@ -2071,44 +2070,44 @@ void RNNPG::initBackup()
 	for(i = 0; i < M; i ++)
 	{
 		N = hiddenSize * unitNum;
-		sen5Neu_backup[i] = (neuron*)xmalloc(N * sizeof(neuron));
+		sen5Neu_backup[i] = (RNNPGNS::neuron*)xmalloc(N * sizeof(RNNPGNS::neuron));
 		if(unitNum > 1)	unitNum -= conSeq[i] - 1;
 	}
 	M = hiddenSize * hiddenSize * 2;
-	compressSyn_backup = (synapse*)xmalloc(M * sizeof(synapse));
+	compressSyn_backup = (RNNPGNS::synapse*)xmalloc(M * sizeof(RNNPGNS::synapse));
 	M = hiddenSize;
-	hisNeu_backup = (neuron*)xmalloc(M * sizeof(neuron));
+	hisNeu_backup = (RNNPGNS::neuron*)xmalloc(M * sizeof(RNNPGNS::neuron));
 	M = hiddenSize * 2;
-	cmbNeu_backup = (neuron*)xmalloc(M * sizeof(neuron));
+	cmbNeu_backup = (RNNPGNS::neuron*)xmalloc(M * sizeof(RNNPGNS::neuron));
 	M = 8; N = hiddenSize * hiddenSize;
 	for(i = 0; i < M; i ++)
 	{
-		map7Syn_backup[i] = (synapse*)xmalloc(N * sizeof(synapse));
+		map7Syn_backup[i] = (RNNPGNS::synapse*)xmalloc(N * sizeof(RNNPGNS::synapse));
 		// map7Syn_backup[i][j].weight = map7Syn[i][j].weight;
 	}
 	M = 6; N = hiddenSize * hiddenSize;
 	for(i = 0; i < M; i ++)
 	{
-		map5Syn_backup[i] = (synapse*)xmalloc(N * sizeof(synapse));
+		map5Syn_backup[i] = (RNNPGNS::synapse*)xmalloc(N * sizeof(RNNPGNS::synapse));
 		// map5Syn_backup[i][j].weight = map5Syn[i][j].weight;
 	}
 	M = hiddenSize;
-	conditionNeu_backup = (neuron*)xmalloc(M * sizeof(neuron));
+	conditionNeu_backup = (RNNPGNS::neuron*)xmalloc(M * sizeof(RNNPGNS::neuron));
 	M = vocab.getVocabSize() * hiddenSize;
-	senweSyn_backup = (synapse*)xmalloc(M * sizeof(synapse));
+	senweSyn_backup = (RNNPGNS::synapse*)xmalloc(M * sizeof(RNNPGNS::synapse));
 	M = vocab.getVocabSize() + hiddenSize + hiddenSize;
-	inNeu_backup = (neuron*)xmalloc(M * sizeof(neuron));
+	inNeu_backup = (RNNPGNS::neuron*)xmalloc(M * sizeof(RNNPGNS::neuron));
 	M = hiddenSize;
-	hiddenNeu_backup = (neuron*)xmalloc(M * sizeof(neuron));
+	hiddenNeu_backup = (RNNPGNS::neuron*)xmalloc(M * sizeof(RNNPGNS::neuron));
 	M = vocab.getVocabSize() + classSize;
-	outNeu_backup = (neuron*)xmalloc(M * sizeof(neuron));
+	outNeu_backup = (RNNPGNS::neuron*)xmalloc(M * sizeof(RNNPGNS::neuron));
 	M = hiddenSize * (vocab.getVocabSize() + hiddenSize + hiddenSize);
-	hiddenInSyn_backup = (synapse*)xmalloc(M * sizeof(synapse));
+	hiddenInSyn_backup = (RNNPGNS::synapse*)xmalloc(M * sizeof(RNNPGNS::synapse));
 	M = (vocab.getVocabSize() + classSize) * hiddenSize;
-	outHiddenSyn_backup = (synapse*)xmalloc(M * sizeof(synapse));
+	outHiddenSyn_backup = (RNNPGNS::synapse*)xmalloc(M * sizeof(RNNPGNS::synapse));
 
 	M = ((vocab.getVocabSize() + classSize) * hiddenSize);
-	outConditionDSyn_backup = (synapse*)xmalloc(M * sizeof(synapse));
+	outConditionDSyn_backup = (RNNPGNS::synapse*)xmalloc(M * sizeof(RNNPGNS::synapse));
 }
 
 void RNNPG::saveWeights()
@@ -2859,7 +2858,7 @@ void RNNPG::showParameters()
 }
 
 // this function is from Tomas Mikolov's toolkit, rnnlm-0.2b
-void RNNPG::matrixXvector(struct neuron *dest, struct neuron *srcvec, struct synapse *srcmatrix, int matrix_width, int from, int to, int from2, int to2, int type)
+void RNNPG::matrixXvector(struct RNNPGNS::neuron *dest, struct RNNPGNS::neuron *srcvec, struct RNNPGNS::synapse *srcmatrix, int matrix_width, int from, int to, int from2, int to2, int type)
 {
     int a, b;
     double val1, val2, val3, val4;
@@ -2956,11 +2955,11 @@ void RNNPG::matrixXvector(struct neuron *dest, struct neuron *srcvec, struct syn
  * Since given all the previous sentences, the resulting activation caused by these sentences in hiddenNeu is constant,
  * we pre-compute all the activations here
  */
-void RNNPG::getContextHiddenNeu(vector<string> &prevSents, neuron **contextHiddenNeu)
+void RNNPG::getContextHiddenNeu(vector<string> &prevSents, RNNPGNS::neuron **contextHiddenNeu)
 {
 	int i, SEN_HIGHT = -1;
-	neuron **senNeu = NULL;
-	synapse **mapSyn = NULL;
+	RNNPGNS::neuron **senNeu = NULL;
+	RNNPGNS::synapse **mapSyn = NULL;
 	vector<string> words;
 	clearNeurons(cmbNeu, hiddenSize * 2, 3);
 
@@ -2982,8 +2981,8 @@ void RNNPG::getContextHiddenNeu(vector<string> &prevSents, neuron **contextHidde
 		SEN_HIGHT = words.size() == 5 ? SEN5_HIGHT : SEN7_HIGHT;
 		senNeu = words.size() == 5 ? sen5Neu : sen7Neu;
 		initSent(words.size());
-		neuron *sen_repr = sen2vec(words, senNeu, SEN_HIGHT);		// this is the pointer for the top layer sentence model, DO NOT modify it
-		memcpy(cmbNeu + hiddenSize, sen_repr, sizeof(neuron)*hiddenSize);
+		RNNPGNS::neuron *sen_repr = sen2vec(words, senNeu, SEN_HIGHT);		// this is the pointer for the top layer sentence model, DO NOT modify it
+		memcpy(cmbNeu + hiddenSize, sen_repr, sizeof(RNNPGNS::neuron)*hiddenSize);
 		clearNeurons(hisNeu, hiddenSize, 3);
 		matrixXvector(hisNeu, cmbNeu, compressSyn, hiddenSize * 2, 0, hiddenSize, 0, hiddenSize * 2, 0);
 		funACNeurons(hisNeu, hiddenSize);
@@ -3017,7 +3016,7 @@ void RNNPG::getContextHiddenNeu(vector<string> &prevSents, neuron **contextHidde
 		}
 
 		if(i != (int)prevSents.size() - 1)
-			memcpy(cmbNeu, hisNeu, sizeof(neuron)*hiddenSize);
+			memcpy(cmbNeu, hisNeu, sizeof(RNNPGNS::neuron)*hiddenSize);
 	}
 
 	// after obtaining hisNeu, we will next get the conditionNeu and activation from conditionNeu to hiddenNeu
@@ -3041,8 +3040,8 @@ bool pair_cmp(const pair<string,double> &p1, const pair<string,double> &p2)
 	return !(p1.second < p2.second);
 }
 
-void RNNPG::computeNetContext(const char *lword, const char *cword, neuron *curHiddenNeu, neuron *contextHiddenNeu,
-		neuron *newHiddenNeu, vector<pair<string,double> > &nextWordProbs)
+void RNNPG::computeNetContext(const char *lword, const char *cword, RNNPGNS::neuron *curHiddenNeu, RNNPGNS::neuron *contextHiddenNeu,
+		RNNPGNS::neuron *newHiddenNeu, vector<pair<string,double> > &nextWordProbs)
 {
 	int lastWord = vocab.getVocabID(lword);
 	int i, j, V = vocab.getVocabSize();
@@ -3133,8 +3132,8 @@ void RNNPG::computeNetContext(const char *lword, const char *cword, neuron *curH
 	}
 }
 
-double RNNPG::computeNetContext(const char *lword, int startPos, const vector<string> &words, neuron *curHiddenNeu, neuron **contextHiddenNeus,
-			neuron *newHiddenNeu)
+double RNNPG::computeNetContext(const char *lword, int startPos, const vector<string> &words, RNNPGNS::neuron *curHiddenNeu, RNNPGNS::neuron **contextHiddenNeus,
+			RNNPGNS::neuron *newHiddenNeu)
 {
 	double phraseLogProb = 0;
 	int lastWord = vocab.getVocabID(lword);
@@ -3225,8 +3224,8 @@ double RNNPG::computeNetContext(const char *lword, int startPos, const vector<st
 	return phraseLogProb;
 }
 
-double RNNPG::computeNetContext(const char *lword, int startPos, const vector<string> &words, neuron *curHiddenNeu, neuron **contextHiddenNeus,
-			neuron *newHiddenNeu, vector<double> knProbs, double lambda)
+double RNNPG::computeNetContext(const char *lword, int startPos, const vector<string> &words, RNNPGNS::neuron *curHiddenNeu, RNNPGNS::neuron **contextHiddenNeus,
+			RNNPGNS::neuron *newHiddenNeu, vector<double> knProbs, double lambda)
 {
 	double phraseLogProb = 0;
 	int lastWord = vocab.getVocabID(lword);

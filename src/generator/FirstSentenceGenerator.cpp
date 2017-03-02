@@ -8,7 +8,6 @@
 
 
 #include "FirstSentenceGenerator.h"
-
 /**
  * @brief
  * 将诗学含英的内容映射成一个map<string,set<string>>的map，map的内容举例如下

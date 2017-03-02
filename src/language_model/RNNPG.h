@@ -45,29 +45,30 @@ bool pair_cmp(const pair<string,double> &p1, const pair<string,double> &p2);
 //	  return !(p1.second < p2.second);
 //	}
 //}pairCmp;
+namespace RNNPGNS {
+	struct neuron {
+		// f(net) or net
+		double ac;		//actual value stored in neuron
+		double er;		//error value in neuron, used by learning algorithm
 
-struct neuron {
-	// f(net) or net
-    double ac;		//actual value stored in neuron
-    double er;		//error value in neuron, used by learning algorithm
+		void set(double a = 0, double e = 0)
+		{
+			ac = a;
+			er = e;
+		}
+		void fun_ac()
+		{
+			if(ac > 50) ac = 50;
+			if(ac < -50) ac = -50;
+			// sigmoid function
+			ac = 1/(1+FAST_EXP(-ac));
+		}
+	};
 
-    void set(double a = 0, double e = 0)
-    {
-    	ac = a;
-    	er = e;
-    }
-    void fun_ac()
-    {
-    	if(ac > 50) ac = 50;
-    	if(ac < -50) ac = -50;
-    	// sigmoid function
-    	ac = 1/(1+FAST_EXP(-ac));
-    }
-};
-
-struct synapse {
-    double weight;	//weight of synapse
-};
+	struct synapse {
+		double weight;	//weight of synapse
+	};
+}
 
 const int MAX_CON_N = 4;
 const int conSeq[MAX_CON_N] = { 2, 2, 3, 3 };  // convolution sequence
@@ -91,13 +92,13 @@ public:
 	void saveNet(const char *outfile);
 	void loadVocab(const char *trainFile);
 	void loadVocabFromTrain() { loadVocab(trainFile); }
-	void getContextHiddenNeu(vector<string> &prevSents, neuron **contextHiddenNeu);
-	void computeNetContext(const char *lword, const char *cword, neuron *curHiddenNeu, neuron *contextHiddenNeu,
-			neuron *newHiddenNeu, vector<pair<string,double> > &nextWordProbs);
-	double computeNetContext(const char *lword, int startPos, const vector<string> &words, neuron *curHiddenNeu, neuron **contextHiddenNeus,
-			neuron *newHiddenNeu);
-	double computeNetContext(const char *lword, int startPos, const vector<string> &words, neuron *curHiddenNeu, neuron **contextHiddenNeus,
-				neuron *newHiddenNeu, vector<double> knProbs, double lambda);
+	void getContextHiddenNeu(vector<string> &prevSents, RNNPGNS::neuron **contextHiddenNeu);
+	void computeNetContext(const char *lword, const char *cword, RNNPGNS::neuron *curHiddenNeu, RNNPGNS::neuron *contextHiddenNeu,
+			RNNPGNS::neuron *newHiddenNeu, vector<pair<string,double> > &nextWordProbs);
+	double computeNetContext(const char *lword, int startPos, const vector<string> &words, RNNPGNS::neuron *curHiddenNeu, RNNPGNS::neuron **contextHiddenNeus,
+			RNNPGNS::neuron *newHiddenNeu);
+	double computeNetContext(const char *lword, int startPos, const vector<string> &words, RNNPGNS::neuron *curHiddenNeu, RNNPGNS::neuron **contextHiddenNeus,
+				RNNPGNS::neuron *newHiddenNeu, vector<double> knProbs, double lambda);
 
 	// set parameters
 	void setHiddenSize(int size) { hiddenSize = size; }
@@ -131,7 +132,7 @@ public:
 
 	// get parameters
 	int getHiddenSize()	{	return hiddenSize;	}
-	void getHiddenNeuron(neuron * hiddenNeurons)
+	void getHiddenNeuron(RNNPGNS::neuron * hiddenNeurons)
 	{
 		for(int i = 0; i < hiddenSize; i ++)
 		{
@@ -154,26 +155,26 @@ private:
 	char vocabClassF[MAX_PATH_LENGTH];
 	int randomSeed;
 	WordEmbedding wdEmbed;
-	synapse *conSyn[MAX_CON_N];			 	 // convolution matrix
-	synapse *conSynOffset[MAX_CON_N];		 // when update convolution matrix, we need to compute the offset first and then add the L2 norm term
+	RNNPGNS::synapse *conSyn[MAX_CON_N];			 	 // convolution matrix
+	RNNPGNS::synapse *conSynOffset[MAX_CON_N];		 // when update convolution matrix, we need to compute the offset first and then add the L2 norm term
 	enum SEN_LENGTH {SEN5_LENGTH = 5, SEN7_LENGTH = 7};
 	enum SEN_TREE_HIGHT{SEN5_HIGHT = 4, SEN7_HIGHT = 5};
-	neuron *sen7Neu[SEN7_HIGHT];
-	neuron *sen5Neu[SEN5_HIGHT];
-	synapse *compressSyn;		// used to compress history representation and the current representation. Or generate new history_i using history_i-1 and sen_repr_i
-	neuron *hisNeu;		// history representation
-	neuron *cmbNeu;		// previous history representation and the current representation
-	synapse *map7Syn[8];	// this matrix is used to map representation to each postion in the generated sentence (for 7 character sentences)
-	synapse *map5Syn[6];	// this matrix is used to map representation to each postion in the generated sentence (for 5 character sentences)
-	neuron *conditionNeu;	// conditional representation for each sentence
+	RNNPGNS::neuron *sen7Neu[SEN7_HIGHT];
+	RNNPGNS::neuron *sen5Neu[SEN5_HIGHT];
+	RNNPGNS::synapse *compressSyn;		// used to compress history representation and the current representation. Or generate new history_i using history_i-1 and sen_repr_i
+	RNNPGNS::neuron *hisNeu;		// history representation
+	RNNPGNS::neuron *cmbNeu;		// previous history representation and the current representation
+	RNNPGNS::synapse *map7Syn[8];	// this matrix is used to map representation to each postion in the generated sentence (for 7 character sentences)
+	RNNPGNS::synapse *map5Syn[6];	// this matrix is used to map representation to each postion in the generated sentence (for 5 character sentences)
+	RNNPGNS::neuron *conditionNeu;	// conditional representation for each sentence
 
-	synapse *senweSyn;		// the word embedding matrix in sentence model. This can be modified during training. We can inilizate it with word2vec word embedding, or just randomly
+	RNNPGNS::synapse *senweSyn;		// the word embedding matrix in sentence model. This can be modified during training. We can inilizate it with word2vec word embedding, or just randomly
 
-	neuron *inNeu;
-	neuron *hiddenNeu;
-	neuron *outNeu;
-	synapse *hiddenInSyn;
-	synapse *outHiddenSyn;
+	RNNPGNS::neuron *inNeu;
+	RNNPGNS::neuron *hiddenNeu;
+	RNNPGNS::neuron *outNeu;
+	RNNPGNS::synapse *hiddenInSyn;
+	RNNPGNS::synapse *outHiddenSyn;
 	int classSize;
 	Word *voc_arr;
 	int *classStart;
@@ -181,23 +182,23 @@ private:
 
 	// for back propagation
 	int *bpttHistory;
-	neuron* bpttHiddenNeu;
-	neuron* bpttInHiddenNeu;
-	synapse *bpttHiddenInSyn;
-	neuron* bpttConditionNeu;
+	RNNPGNS::neuron* bpttHiddenNeu;
+	RNNPGNS::neuron* bpttInHiddenNeu;
+	RNNPGNS::synapse *bpttHiddenInSyn;
+	RNNPGNS::neuron* bpttConditionNeu;
 
 	// for directErr propagate to input layer
-	synapse *outConditionDSyn;
-	neuron *bufOutConditionNeu;		// errors from every word in the sentence to condition neuron directly
+	RNNPGNS::synapse *outConditionDSyn;
+	RNNPGNS::neuron *bufOutConditionNeu;		// errors from every word in the sentence to condition neuron directly
 
 	// for BPTT of recurrent context model
 	bool isLastSentOfPoem;
 	bool conbptt;
 	int contextBPTTSentNum;
-	neuron* conBPTTHis;
-	neuron* conBPTTCmbHis;
-	neuron* conBPTTCmbSent;
-	synapse *bpttHisCmbSyn;
+	RNNPGNS::neuron* conBPTTHis;
+	RNNPGNS::neuron* conBPTTCmbHis;
+	RNNPGNS::neuron* conBPTTCmbSent;
+	RNNPGNS::synapse *bpttHisCmbSyn;
 
 	int maxIter;
 	double alpha;	// this is the learning rate
@@ -239,23 +240,23 @@ private:
 
 
 	// backups
-	synapse *conSyn_backup[MAX_CON_N];			 	 // convolution matrix	// backup
-	synapse *conSynOffset_backup[MAX_CON_N];		 // when update convolution matrix, we need to compute the offset first and then add the L2 norm term	// backup
-	neuron *sen7Neu_backup[SEN7_HIGHT];	// backup
-	neuron *sen5Neu_backup[SEN5_HIGHT];	// backup
-	synapse *compressSyn_backup;		// used to compress history representation and the current representation. Or generate new history_i using history_i-1 and sen_repr_i	// backup
-	neuron *hisNeu_backup;		// history representation	// backup
-	neuron *cmbNeu_backup;		// previous history representation and the current representation	// backup
-	synapse *map7Syn_backup[8];	// this matrix is used to map representation to each postion in the generated sentence (for 7 character sentences)	// backup
-	synapse *map5Syn_backup[6];	// this matrix is used to map representation to each postion in the generated sentence (for 5 character sentences)	// backup
-	neuron *conditionNeu_backup;	// conditional representation for each sentence	// backup
-	synapse *senweSyn_backup;		// the word embedding matrix in sentence model. This can be modified during training. We can inilizate it with word2vec word embedding, or just randomly	// backup
-	neuron *inNeu_backup;	// backup
-	neuron *hiddenNeu_backup;	// backup
-	neuron *outNeu_backup;	// backup
-	synapse *hiddenInSyn_backup;	// backup
-	synapse *outHiddenSyn_backup;	// backup
-	synapse *outConditionDSyn_backup;		// backup
+	RNNPGNS::synapse *conSyn_backup[MAX_CON_N];			 	 // convolution matrix	// backup
+	RNNPGNS::synapse *conSynOffset_backup[MAX_CON_N];		 // when update convolution matrix, we need to compute the offset first and then add the L2 norm term	// backup
+	RNNPGNS::neuron *sen7Neu_backup[SEN7_HIGHT];	// backup
+	RNNPGNS::neuron *sen5Neu_backup[SEN5_HIGHT];	// backup
+	RNNPGNS::synapse *compressSyn_backup;		// used to compress history representation and the current representation. Or generate new history_i using history_i-1 and sen_repr_i	// backup
+	RNNPGNS::neuron *hisNeu_backup;		// history representation	// backup
+	RNNPGNS::neuron *cmbNeu_backup;		// previous history representation and the current representation	// backup
+	RNNPGNS::synapse *map7Syn_backup[8];	// this matrix is used to map representation to each postion in the generated sentence (for 7 character sentences)	// backup
+	RNNPGNS::synapse *map5Syn_backup[6];	// this matrix is used to map representation to each postion in the generated sentence (for 5 character sentences)	// backup
+	RNNPGNS::neuron *conditionNeu_backup;	// conditional representation for each sentence	// backup
+	RNNPGNS::synapse *senweSyn_backup;		// the word embedding matrix in sentence model. This can be modified during training. We can inilizate it with word2vec word embedding, or just randomly	// backup
+	RNNPGNS::neuron *inNeu_backup;	// backup
+	RNNPGNS::neuron *hiddenNeu_backup;	// backup
+	RNNPGNS::neuron *outNeu_backup;	// backup
+	RNNPGNS::synapse *hiddenInSyn_backup;	// backup
+	RNNPGNS::synapse *outHiddenSyn_backup;	// backup
+	RNNPGNS::synapse *outConditionDSyn_backup;		// backup
 	// neuron *bufOutConditionNeu_backup;		// backup
 	double *directSyn_backup;		// backup; remember to modify code in saveWeights and restoreWeights :)
 
@@ -399,10 +400,10 @@ private:
 	double adaGradEps;
 
 	// private functions
-	neuron* sen2vec(const vector<string> &senWords, neuron **senNeu, int SEN_HIGHT);
+	RNNPGNS::neuron* sen2vec(const vector<string> &senWords, RNNPGNS::neuron **senNeu, int SEN_HIGHT);
 	void trainPoem(const vector<string> &sentences);
 	void testPoem(const vector<string> &sentences);
-	void computeNet(int lastWord, int curWord, int wordPos, synapse** mapSyn);
+	void computeNet(int lastWord, int curWord, int wordPos, RNNPGNS::synapse** mapSyn);
 	void learnNet(int lastWord, int curWord, int wordPos, int senLen);
 	void learnNetAdaGrad(int lastWord, int curWord, int wordPos, int senLen);
 	void learnSent(int senLen);
@@ -418,13 +419,13 @@ private:
 	void loadBasicSetting(FILE *fin);
 	// void save
 	void initBackup();
-    void matrixXvector(struct neuron *dest, struct neuron *srcvec, struct synapse *srcmatrix, int matrix_width, int from, int to, int from2, int to2, int type);
+	void matrixXvector(struct RNNPGNS::neuron *dest, struct RNNPGNS::neuron *srcvec, struct RNNPGNS::synapse *srcmatrix, int matrix_width, int from, int to, int from2, int to2, int type);
     void initSent(int senLen);
     void flushNet();
     void testNetFile(const char *testF);
     void assignClassLabel();
     void copyHiddenLayerToInput();
-    void clearNeurons(neuron* neus, int size, int flag)
+	void clearNeurons(RNNPGNS::neuron* neus, int size, int flag)
 	{
 		for(int i = 0; i < size; i ++)
 		{
@@ -432,7 +433,7 @@ private:
 			if(flag & 2) neus[i].er = 0;
 		}
 	}
-    void copyNeurons(neuron* dstNeu, neuron* srcNeu, int size, int flag)
+	void copyNeurons(RNNPGNS::neuron* dstNeu, RNNPGNS::neuron* srcNeu, int size, int flag)
     {
     	for(int i = 0; i < size; i ++)
     	{
@@ -440,12 +441,12 @@ private:
     		if(flag & 2) dstNeu[i].er = srcNeu[i].er;
     	}
     }
-    void funACNeurons(neuron* neus, int size)
+	void funACNeurons(RNNPGNS::neuron* neus, int size)
     {
     	for(int i = 0; i < size; i ++)
     		neus[i].fun_ac();
     }
-    void printNeurons(neuron* neus, int size)
+	void printNeurons(RNNPGNS::neuron* neus, int size)
     {
     	for(int i = 0; i < size; i ++)
     		cout << "(" << neus[i].ac << "," << neus[i].er << ") ";
