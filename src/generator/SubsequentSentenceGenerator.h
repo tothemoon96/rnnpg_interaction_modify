@@ -19,17 +19,6 @@ using namespace std;
 
 #include "../tone_helper/Constraints.h"
 
-/*
-topK = 20
-model = 
-transTable = 
-stackSize = 300
-channelOption = 1 
-weightFile = 
-ngramLM = 
-ngramFeatOn = 1
-pingshuiyunDir =
-*/
 
 class SubsequentSentenceGenerator
 {
@@ -99,18 +88,6 @@ public:
 		double interpolateWeight = 0;
 		int ngramFeatOn = 0;
 
-		/*
-		topK = 20
-		model =
-		transTable =
-		stackSize = 300
-		channelOption = 1
-		weightFile =
-		ngramLM =
-		ngramFeatOn = 1
-		pingshuiyunDir =
-		*/
-
 		xstrcpy(modelPath, sizeof(modelPath), XConfig::getStr("model"));
 		if(modelPath[0] != 0)
 		{
@@ -132,9 +109,6 @@ public:
 
 		stackSize = XConfig::getInt("stackSize");
 		channelOption = XConfig::getInt("channelOption");
-//		xstrcpy(weightPath[0], sizeof(weightPath[0]), XConfig::getStr("weightFile12"));
-//		xstrcpy(weightPath[1], sizeof(weightPath[1]), XConfig::getStr("weightFile23"));
-//		xstrcpy(weightPath[2], sizeof(weightPath[2]), XConfig::getStr("weightFile34"));
 		weightFilePaths[0][0] = XConfig::getStr("weightFile12-5");
 		weightFilePaths[0][1] = XConfig::getStr("weightFile12-7");
 		weightFilePaths[1][0] = XConfig::getStr("weightFile23-5");
@@ -155,8 +129,6 @@ public:
 		for(i = 0; i < DECODER_NUMBER; i ++)
 		{
 			decoders[i] = new Decoder(rnnpg, transTables[i], kenlm);
-//			if(weightPath[i][0] != 0)
-//				decoders[i]->loadWeights(weightPath[i]);
 			assert(weightFilePaths[i][0].length() != 0);
 			assert(weightFilePaths[i][1].length() != 0);
 
@@ -342,12 +314,7 @@ private:
 			//如果在之前的循环里一项都没有添加，那么在这里添加一项
 			if(!push)
 			{
-				// int index = rand() % goodSents.size();
 				prevSents.push_back(goodSents[0]);
-//				vector<string> fields;
-//				split(topSents[0], "|||", fields);
-//				trim(fields[0]);
-				// prevSents.push_back(fields[0]);
 			}
 		}
 
