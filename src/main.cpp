@@ -11,9 +11,7 @@
  */
 #include <iostream>
 #include <iomanip>
-#include "util/XConfig.h"
 #include "generator/PoemGenerator.h"
-#include "util/xutil.h"
 using namespace std;
 void cmdLineGenerator(int argc, char **argv){
 	cout<<"诗歌生成0.1版"<<endl;
@@ -24,7 +22,6 @@ void cmdLineGenerator(int argc, char **argv){
 	PoemGenerator pg;
 	while(1){
 		pg.reset();
-		XConfig::load(argv[1]);
 		string input;
 		cout<<"请输入关键词："<<endl;
 		cout<<"举例：＂才 女,美 人,中 秋 月＂，分割的标点符号为英语标点符号"<<endl;
@@ -72,20 +69,8 @@ void cmdLineGenerator(int argc, char **argv){
 	}
 }
 
-//void test_str(){
-//	string input;
-//	getline(cin,input);
-//	vector<string> keywords;
-//	split(input,"，",keywords);
-//	for(int i=0;i<keywords.size();i++){
-//		cout<<keywords[i]<<endl;
-//	}
-//	getchar();
-//}
-
 int main(int argc, char **argv){
 	cmdLineGenerator(argc,argv);
-//	test_str();
 	return 0;
 }
 
